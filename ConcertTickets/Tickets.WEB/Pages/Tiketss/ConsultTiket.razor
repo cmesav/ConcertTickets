@@ -3,7 +3,7 @@
 @inject SweetAlertService sweetAlertService
 @inject IRepository repository
 
-<h3>Consultar Boleta</h3>
+<center><h3>Consultar Boleta</h3></center>
 
 <GenericList MyList="Tickets">
     <Body>
@@ -14,9 +14,14 @@
 
             <div class="mb-3">
                 <form method="get">
-                    <label for="ticketNumberInput" class="form-label">Numero del ticket:</label>
-                    <input type="number" class="form-control" id="ticketNumberInput" name="ticketNumber" min="0" max="100" required>
-                    <button type="submit" class="btn btn-warning" onclick='document.location.href="/tickets/edit/" + document.getElementById("ticketNumberInput").value;'>Consultar</button>
+                   <center> <label for="ticketNumberInput" class="form-label">Numero del ticket:</label></center>
+                   <center> <input style="width: 400px;" type="number" class="form-control" id="ticketNumberInput" name="ticketNumber" min="0" max="100" required></center>
+                    <div class="mb-3">
+                        <center>
+                            <button type="submit" class="btn btn-warning" onclick='document.location.href="/tickets/edit/" + document.getElementById("ticketNumberInput").value;'>Consultar</button>
+                        </center>
+                    </div>
+                    
                 </form>
             </div>
         </table>

@@ -27,7 +27,7 @@ namespace Tickets.WEB.Repositories
             var codigoEstatus = HttpResponseMessage.StatusCode;
             if (codigoEstatus == HttpStatusCode.NotFound)
             {
-                return "Recurso no encontrado";
+                return "Boleta no existe, favor verifique";
             }
             else if (codigoEstatus == HttpStatusCode.BadRequest)
             {

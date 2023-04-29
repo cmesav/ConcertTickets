@@ -7,7 +7,7 @@
 
 @if (ticket is null)
 {
-    <p>Cargando...</p>
+    <p>.</p>
 }
 else
 {
@@ -29,6 +29,8 @@ else
         {
             if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
+                var messageError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
                 navigationManager.NavigateTo("/tickets");
             }
             else
