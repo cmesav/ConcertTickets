@@ -20,17 +20,16 @@ namespace Tickets.API.Controllers
             _context = context;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult> GetAsync()
-        //{
-        //    return Ok(await _context.Tickets.ToListAsync());
-        //}
-
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Tickets
                 .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Id == int.Parse(pagination.Filter));
+            }
 
             return Ok(await queryable
                 .OrderBy(x => x.Id)
@@ -42,6 +41,12 @@ namespace Tickets.API.Controllers
         public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
         {
             var queryable = _context.Tickets.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Id == int.Parse(pagination.Filter));
+            }
+
             double count = await queryable.CountAsync();
             double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
             return Ok(totalPages);
