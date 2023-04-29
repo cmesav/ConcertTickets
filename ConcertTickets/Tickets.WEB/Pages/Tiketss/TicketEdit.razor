@@ -45,6 +45,7 @@ else
 
     private async Task Edit()
     {
+        ticket!.Used = true;
         var responseHTTP = await repository.Put("api/tickets", ticket);
 
         if (responseHTTP.Error)

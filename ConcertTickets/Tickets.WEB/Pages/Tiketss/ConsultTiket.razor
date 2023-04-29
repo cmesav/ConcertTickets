@@ -1,0 +1,56 @@
+﻿@page "/ticketsconsult"
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+@inject IRepository repository
+
+<h3>Consultar Boleta</h3>
+
+<GenericList MyList="Tickets">
+    <Body>
+        <table class="table table-striped">
+            <thead>
+
+            </thead>
+
+            <div class="mb-3">
+                <form method="get">
+                    <label for="ticketNumberInput" class="form-label">Numero del ticket:</label>
+                    <input type="number" class="form-control" id="ticketNumberInput" name="ticketNumber" min="0" max="100" required>
+                    <button type="submit" class="btn btn-warning" onclick='document.location.href="/tickets/edit/" + document.getElementById("ticketNumberInput").value;'>Consultar</button>
+                </form>
+            </div>
+        </table>
+    </Body>
+</GenericList>
+
+@code {
+
+
+    public List<Ticket>? Tickets { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responseHppt = await repository.Get<List<Ticket>>("api/tickets");
+        Tickets = responseHppt.Response!;
+
+        if (responseHppt.Error)
+        {
+            if (responseHppt.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                //var mensajeError = await responseHppt.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync(new SweetAlertOptions
+                    {
+                        Title = "Confirmación",
+                        Text = "¿Esta seguro que quieres borrar el registro?",
+                        Icon = SweetAlertIcon.Question,
+                        ShowCancelButton = true
+                    });
+            }
+            //else
+            //{
+            //    var mensajeError = await responseHppt.GetErrorMessageAsync();
+            //    await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            //}
+        }
+    }
+}

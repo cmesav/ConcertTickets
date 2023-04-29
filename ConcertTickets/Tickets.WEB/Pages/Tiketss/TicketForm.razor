@@ -1,29 +1,67 @@
 ﻿@inject SweetAlertService sweetAlertService
 
-<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"></NavigationLock>
+@if (Ticket.Used is true)
+{
 
-<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <div class="mb-3">
-        <label>Entrada:</label>
-        <div>
-            <InputText class="form-control" @bind-Value="@Ticket.Entrance" />
-            <ValidationMessage For="@(() => Ticket.Entrance)" />
+    <center>
+        <h2>El boleto ya ha sido utlizado</h2>
+        <h3>Puerta de entrada: @Ticket.Entrance</h3>
+        <h3>Fecha y hora: @Ticket.Date</h3>
+        <img src="images/forbidden.png" width="300" />
+        <h3> <p>Lo sentimos, el boleto ha sido utilizado por alguien más, si crees que se trata de un error, por favor contacta con logistica</p></h3>
+        <a href="/tickets" class="btn btn-primary">Volver al inicio</a>
+    </center>
+
+}
+else
+{
+    <EditForm Model="Ticket" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label>Datos de la boleta:</label>
+            <div>
+                <InputSelect style="width: 400px;" class="form-control" @bind-Value="@Ticket.Entrance">
+                    <option value="0">-- Seleccione una Porteria --</option>
+                    @if (Entrances is not null)
+
+                        @foreach (var entrance in Entrances)
+                        {
+                            <option value="@entrance">@entrance</option>
+                        }
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => Ticket.Entrance)" />
+            </div>
+            <div>
+                <label>Fecha de la boleta:</label>
+                <InputDate style="width: 400px;" Type="InputDateType.DateTimeLocal" class="form-control" @bind-Value="@Ticket.Date" />
+                <ValidationMessage For="@(() => Ticket.Date)" />
+            </div>
+
+
         </div>
-    </div>
 
-    <button class="btn btn-primary" type="submit">Guardar Cambios</button>
-    <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
-</EditForm>
+        <button class="btn btn-primary" type="submit">INGRESAR</button>
+        <button class="btn btn-success" @onclick="ReturnAction">Regresar</button>
+    </EditForm>
+}
 
 
 @code {
+    private string? SelectedEntrance { get; set; }
+
+    private List<string> Entrances { get; } = new List<string> { "Norte", "Sur", "Oriental", "Occidental" };
+
+
     private EditContext editContext = null!;
 
     protected override void OnInitialized()
     {
         editContext = new(Ticket);
     }
+
+
+
 
     [EditorRequired]
     [Parameter]
@@ -53,14 +91,13 @@
             return;
         }
 
+
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
             {
                 Title = "Confirmación",
                 Text = "¿Deseas abandonar la página y perder los cambios?",
-                Icon = SweetAlertIcon.Question,
-                ShowCancelButton = true,
-                CancelButtonText = "No",
-                ConfirmButtonText = "Si"
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true
             });
 
         var confirm = !string.IsNullOrEmpty(result.Value);
@@ -72,5 +109,4 @@
 
         context.PreventNavigation();
     }
-
 }

@@ -28,7 +28,24 @@ namespace Tickets.API.Controllers
 
             if (!string.IsNullOrWhiteSpace(pagination.Filter))
             {
-                queryable = queryable.Where(x => x.Id == int.Parse(pagination.Filter));
+                int filterValue;
+                if (int.TryParse(pagination.Filter, out filterValue))
+                {
+                    queryable = queryable.Where(x => x.Id == filterValue);
+                }
+                else
+                {
+                    bool boolFilter;
+                    if (bool.TryParse(pagination.Filter, out boolFilter))
+                    {
+                        queryable = queryable.Where(x => x.Used == bool.Parse(pagination.Filter.ToLower()));
+                    }
+                    else
+                    {
+                        queryable = queryable.Where(x => x.Entrance!.ToLower().Contains(pagination.Filter.ToLower()));
+                    }
+
+                }
             }
 
             return Ok(await queryable
